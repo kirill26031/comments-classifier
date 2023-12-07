@@ -17,7 +17,7 @@ def main():
 
     text = ' '.join(sys.argv[1:])
     model = get_model(DEFAULT_MODEL)
-    reduced_features = perform_reduction(model.ipca, perform_vectorization(model.vectorizer, text), False)
+    reduced_features = perform_reduction(model.ipca, perform_vectorization(model.vectorizer, [text]), False)
     result = dict()
     for target in model.gnbs:
         result.__setitem__(target, model.gnbs[target].predict(reduced_features))
@@ -36,9 +36,7 @@ def evaluate_model(target, gnb, X_test, y_test):
             correct_amount += 1
         else:
             incorrect_amount += 1
-    # print("Correct: ", correct_amount)
-    # print("Incorrect: ", incorrect_amount)
-    print("\nFor " + target + " accuracy is " + str(correct_amount * 1.0/(correct_amount + incorrect_amount)))
+    print("\nFor " + target + " accuracy is " + str(correct_amount * 1.0 / (correct_amount + incorrect_amount)))
 
 
 def create_model(model_name, dataset_length, amount_of_components):
@@ -61,6 +59,15 @@ def create_model(model_name, dataset_length, amount_of_components):
         evaluate_model(target, gnb, perform_reduction(ipca, X_test), y_test[target])
 
     store_model(model_name, Model(ipca, gnbs, vectorizer))
+
+
+def evaluate_on_the_rest_of_dataset(initial_length):
+    train_data = pd.read_csv(os.path.join('data', 'train.csv'))
+    dataset = train_data[initial_length:]
+    model = get_model(DEFAULT_MODEL)
+    reduced_features = perform_reduction(model.ipca, perform_vectorization(model.vectorizer, dataset['comment_text']))
+    for target in model.gnbs:
+        evaluate_model(target, model.gnbs[target], reduced_features, dataset[target])
 
 
 if __name__ == '__main__':
