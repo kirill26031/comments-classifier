@@ -25,7 +25,7 @@ class Model:
 
 
 MODELS = list_folders(base_dir)
-DEFAULT_MODEL = "3000-100-components"
+DEFAULT_MODEL = "30000-1000-components"
 
 
 def get_model(model_name):

@@ -1,7 +1,7 @@
 from sklearn.decomposition import IncrementalPCA
 
 
-def extract_features(features, targets, num=100):
+def extract_features(features, num=100):
     batch_size = 1000
     ipca = IncrementalPCA(n_components=num, batch_size=batch_size)
     # for i in range(0, features.shape[0], batch_size):
@@ -11,3 +11,9 @@ def extract_features(features, targets, num=100):
     #     print('' + str(i) + ' of ' + str(features.shape[0]))
     ipca_result = ipca.fit_transform(features)
     return ipca_result, ipca
+
+
+def perform_reduction(ipca, features, use_batch = True):
+    if not use_batch:
+        ipca.batch_size = 1
+    return ipca.transform(features)
